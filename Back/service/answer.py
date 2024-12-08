@@ -56,3 +56,7 @@ def delete_answer(answer_id: int, db: Session = Depends(get_session)) -> dict:
     db.delete(answer)
     db.commit()
     return {"message": "La respuesta se eliminó correctamente"}
+
+def read_answers_by_user(email: str, db: Session = Depends(get_session)) -> Sequence[Answer]:
+    answers = db.exec(select(Answer).where(Answer.user_email == email)).all()
+    return answers

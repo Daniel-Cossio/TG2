@@ -7,16 +7,20 @@ import Comments from "../comments/Comments";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import CardActions from "@mui/material/CardActions";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Course() {
   const { id } = useParams();
   const courseId = id;
   const [course, setCourse] = useState(null);
   const [activities, setActivities] = useState([]);
-
+  const { user } = useAuth0();
+  const [completedActivities, setCompletedActivities] = useState([]);
+  let videoUrl = "";
   useEffect(() => {
     axios
-      .get(`https://tg2-wfw8.onrender.com/courses/${courseId}`)
+      .get(`http://127.0.0.1:8000/courses/${courseId}`)
+      //.get(`https://tg2-wfw8.onrender.com/courses/${courseId}`)
       .then((response) => {
         setCourse(response.data);
       })
@@ -25,14 +29,32 @@ export default function Course() {
       });
 
     axios
-      .get(`https://tg2-wfw8.onrender.com/activity/course/${courseId}`)
+      .get(`http://127.0.0.1:8000/activity/course/${courseId}`)
+      //.get(`https://tg2-wfw8.onrender.com/activity/course/${courseId}`)
       .then((response) => {
         setActivities(response.data);
       })
       .catch((error) => {
         console.error("Error al obtener las actividades:", error);
       });
-  }, [courseId]);
+
+    // Obtener las respuestas del usuario
+    axios
+      .get(`http://127.0.0.1:8000/answer/?user_email=${user.email}`)
+      .then((response) => {
+        const completed = response.data.map((answer) => answer.activity_id);
+        setCompletedActivities(completed);
+      })
+      .catch((error) => {
+        console.error("Error al obtener las respuestas del usuario:", error);
+      });
+  }, [courseId, user.email]);
+
+  if (courseId === "1") {
+    videoUrl = "https://www.youtube.com/embed/cJUXxjOeoCk";
+  } else if (courseId === "2") {
+    videoUrl = "https://www.youtube.com/embed/jW5KN4Kvpw0?si=QzGMAdQJ9lBfm4z";
+  }
 
   if (!course) {
     return <div>Cargando...</div>;
@@ -76,15 +98,24 @@ export default function Course() {
             <div className="grid gap-4 border-t border-b border-gray-200 py-4">
               {activities.map((activity) => (
                 <div key={activity.id} className="flex items-center space-x-2">
-                  <h3 className="font-bold">
+                  <h3
+                    className="font-bold"
+                    disabled={completedActivities.includes(activity.id)}
+                  >
                     <CardActions>
                       {activity.content_type === "comp" ? (
-                        <Link to={`${activity.path}`}>
+                        <Link
+                          to={`${activity.path}`}
+                          disabled={completedActivities.includes(activity.id)}
+                        >
                           <MdOutlinePlayArrow className="w-4 h-4 text-gray-500" />{" "}
                           {activity.title}
                         </Link>
                       ) : (
-                        <Link to={`/activity/${activity.id}`}>
+                        <Link
+                          to={`/activity/${activity.id}`}
+                          disabled={completedActivities.includes(activity.id)}
+                        >
                           <MdOutlinePlayArrow className="w-4 h-4 text-gray-500" />{" "}
                           {activity.title}
                         </Link>
@@ -115,7 +146,7 @@ export default function Course() {
                   title="Course Video"
                   width="100%"
                   height="315"
-                  src="https://www.youtube.com/embed/cJUXxjOeoCk"
+                  src={videoUrl}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 ></iframe>

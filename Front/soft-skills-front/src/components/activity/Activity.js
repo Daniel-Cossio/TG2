@@ -27,7 +27,8 @@ export default function Activity() {
   useEffect(() => {
     if (isAuthenticated) {
       axios
-        .get(`https://tg2-wfw8.onrender.com/activity/${activityId}`)
+        .get(`http://127.0.0.1:8000/activity/${activityId}`)
+        //.get(`https://tg2-wfw8.onrender.com/activity/${activityId}`)
         .then((response) => {
           setActivity(response.data);
         })
@@ -46,7 +47,10 @@ export default function Activity() {
 
   var activityExample;
   if (activity != null && activity.example != null) {
-    activityExample = DOMPurify.sanitize(activity.example);
+    activityExample = DOMPurify.sanitize(activity.example, {
+      ADD_TAGS: ["iframe"],
+      ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"],
+    });
   } else {
     activityExample = "";
   }
@@ -60,8 +64,7 @@ export default function Activity() {
       alert("Debes iniciar sesión para enviar tus respuestas.");
       return;
     }
-    var guardadasConExito = false;
-    // Iterar sobre cada pregunta y enviar su respuesta al endpoint
+
     Object.entries(answers).forEach(([question, answerText]) => {
       if (answerText.trim() !== "") {
         const answerData = {
@@ -69,25 +72,34 @@ export default function Activity() {
           activity_id: activityId,
           question_number: parseInt(question.replace("answer", "")),
           answer_text: answerText,
+          rating: -1,
+          comment: "",
         };
         axios
-          .post("https://tg2-wfw8.onrender.com/answer", answerData)
+          .post("http://127.0.0.1:8000/answer", answerData)
+          //.post("https://tg2-wfw8.onrender.com/answer", answerData)
           .then((response) => {
-            console.log(`Respuesta ${question} enviada:`, response.data);
-            guardadasConExito = guardadasConExito && true;
+            console.log(
+              `Respuesta ${answerData.question_number} enviada:`,
+              response.data
+            );
+            alert(
+              `Respuesta a pregunta ${answerData.question_number} guardada con éxito.`
+            );
           })
           .catch((error) => {
-            console.error(`Error al enviar respuesta ${question}:`, error);
-          });
+            console.error(
+              `Error al enviar respuesta ${answerData.question_number}:`,
+              error
+            );
+            alert(
+              `Ya hay una respuesta guardada a la pregunta ${answerData.question_number}.`
+            );
+          }, []);
       }
     });
 
-    if (guardadasConExito) {
-      alert("Respuestas guardadas con éxito.");
-      navigate("/dashboard");
-    } else {
-      alert("Ya hay respuestas guardadas para esta actividad.");
-    }
+    navigate("/dashboard");
   };
 
   return (
@@ -145,17 +157,17 @@ export default function Activity() {
                       </>
                     )}
                   </div>
+                  {activityExample && (
+                    <div>
+                      <h2>Actividad</h2>{" "}
+                      <span className="max-w-prose text-gray-500 md:text-xl/relaxed dark:text-gray-400">
+                        <div
+                          dangerouslySetInnerHTML={{ __html: activityExample }}
+                        />
+                      </span>
+                    </div>
+                  )}
                 </Grid>
-                {activityExample && (
-                  <div>
-                    <h2>Actividad</h2>{" "}
-                    <span className="max-w-prose text-gray-500 md:text-xl/relaxed dark:text-gray-400">
-                      <div
-                        dangerouslySetInnerHTML={{ __html: activityExample }}
-                      />
-                    </span>
-                  </div>
-                )}
               </Grid>
               {activity.question1 && (
                 <>

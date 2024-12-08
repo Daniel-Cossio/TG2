@@ -12,7 +12,8 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Tesis backend"
     DESCRIPTION: str = "A FastAPI + SQLModel production-ready API"
     VERSION: str = "0.1"
-    DATABASE_URI: str = "postgresql://postgres:Univalle00@34.29.156.123:5432/postgres"
+    DATABASE_URI: str = f"sqlite:///{db_path}"
+    #DATABASE_URI: str = "postgresql://postgres:Univalle00@34.29.156.123:5432/postgres"
 
     class Config:
         case_sensitive = True

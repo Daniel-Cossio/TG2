@@ -6,6 +6,8 @@ class AnswerBase(SQLModel):
     activity_id: str
     question_number: int
     answer_text: str
+    rating: int = Field(default=None)
+    comment: str = Field(default=None)
 
     class Config:
         json_schema_extra = {
@@ -14,6 +16,8 @@ class AnswerBase(SQLModel):
                 "activity_id": "1",
                 "question_number": 1,
                 "answer_text": "respuesta",
+                "rating": "5.0",
+                "comment": "comment"
             }
         }
 
@@ -29,7 +33,7 @@ class AnswerCreate(AnswerBase):
                 "user_email": "user@email.com",
                 "activity_id": "1",
                 "question_number": 1,
-                "answer_text": "respuesta",
+                "answer_text": "respuesta"
             }
         }
 
@@ -44,6 +48,8 @@ class AnswerUpdate(AnswerBase):
                 "activity_id": "1",
                 "question_number": 1,
                 "answer_text": "new_answer_text",
+                "rating": "5.0",
+                "comment": "comment"
             }
         }
 
@@ -53,4 +59,6 @@ class AnswerRead(AnswerBase):
     activity_id: str
     question_number: int
     answer_text: str
+    rating: int
+    comment: str
 

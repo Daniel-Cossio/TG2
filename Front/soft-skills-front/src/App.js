@@ -9,6 +9,8 @@ import MentalMap from "./components/customactivities/mentalmap/MentalMap";
 import Debate from "./components/customactivities/debate/Debate";
 import DecitionMaking from "./components/customactivities/decisionMaking/DecisionMaking";
 import JigSaw from "./components/customactivities/jigsaw/JigSaw";
+import TeamSelect from "./components/customactivities/jigsaw/teamSelect";
+import Calification from "./components/calification/Calification";
 
 function App() {
   return (
@@ -23,7 +25,9 @@ function App() {
         <Route path="/activity/mentalmap" element={<MentalMap />} />
         <Route path="/activity/debate" element={<Debate />} />
         <Route path="/activity/jigsaw" element={<JigSaw />} />
+        <Route path="/activity/jigsaw/teamselect" element={<TeamSelect />} />
         <Route path="/activity/decisionmaking" element={<DecitionMaking />} />
+        <Route path="/answers/rate" element={<Calification />} />
       </Routes>
     </Router>
   );

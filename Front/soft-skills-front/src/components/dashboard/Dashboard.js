@@ -25,7 +25,8 @@ export default function Album() {
   useEffect(() => {
     // Hacer una solicitud a tu API para obtener la lista de cursos
     axios
-      .get("https://tg2-wfw8.onrender.com/courses")
+      .get("http://127.0.0.1:8000/courses")
+      //.get("https://tg2-wfw8.onrender.com/courses")
       .then((response) => {
         setCourses(response.data); // Actualiza el estado con los datos de los cursos
       })
@@ -65,10 +66,7 @@ export default function Album() {
                       // 16:9
                       pt: "56.25%",
                     }}
-                    image={
-                      course.image ||
-                      "https://source.unsplash.com/random?wallpapers"
-                    }
+                    image={course.image || "https://imgur.com/swGMaxA.jpg"}
                   />
                   <CardContent sx={{ flexGrow: 1 }}>
                     <Typography gutterBottom variant="h5" component="h2">

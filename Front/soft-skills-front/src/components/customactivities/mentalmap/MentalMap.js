@@ -2,13 +2,21 @@ import React, { useState, useEffect } from "react";
 import ResponsiveAppBar from "../../responsiveappbar/ResponsiveAppBar";
 import axios from "axios";
 import Grid from "@mui/material/Grid";
+import DOMPurify from "dompurify";
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function MentalMap() {
   const [activity, setActivity] = useState(null);
+  const { user } = useAuth0();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get(`https://tg2-wfw8.onrender.com/activity/6`)
+      .get(`http://localhost:8000/activity/6`)
+      //.get(`https://tg2-wfw8.onrender.com/activity/6`)
       .then((response) => {
         setActivity(response.data);
       })
@@ -16,11 +24,50 @@ export default function MentalMap() {
         console.error("Error al obtener los detalles de la actividad:", error);
       });
   });
-
+  var activityExample;
+  if (activity != null && activity.example != null) {
+    activityExample = DOMPurify.sanitize(activity.example);
+  } else {
+    activityExample = "";
+  }
   if (!activity) {
     return <div>Cargando...</div>;
   }
 
+  const handleSubmit = () => {
+    const answerData = {
+      user_email: user.email,
+      activity_id: "6",
+      question_number: 1,
+      answer_text: "Finalizado",
+      rating: -1,
+      comment: "",
+    };
+
+    axios
+      .post("http://127.0.0.1:8000/answer", answerData)
+      //.post("https://tg2-wfw8.onrender.com/answer", answerData)
+      .then((response) => {
+        console.log(
+          `Respuesta ${answerData.question_number} enviada:`,
+          response.data
+        );
+        alert(
+          `Respuesta a pregunta ${answerData.question_number} guardada con éxito.`
+        );
+      })
+      .catch((error) => {
+        console.error(
+          `Error al enviar respuesta ${answerData.question_number}:`,
+          error
+        );
+        alert(
+          `Ya hay una respuesta guardada a la pregunta ${answerData.question_number}.`
+        );
+      }, []);
+
+    navigate("/dashboard");
+  };
   return (
     <>
       <ResponsiveAppBar />
@@ -48,6 +95,26 @@ export default function MentalMap() {
             {activity.resources}
             <h3>Introducción</h3>
             {activity.introduction}
+            {activity.analisis && (
+              <>
+                <h3>Análisis de la situación</h3>
+                {activity.analisis}
+              </>
+            )}
+            {activity.evaluation && (
+              <>
+                <h3>Evaluación de escenarios</h3>
+                {activity.evaluation}
+              </>
+            )}
+            {activityExample && (
+              <div>
+                <h2>Actividad</h2>{" "}
+                <span className="max-w-prose text-gray-500 md:text-xl/relaxed dark:text-gray-400">
+                  <div dangerouslySetInnerHTML={{ __html: activityExample }} />
+                </span>
+              </div>
+            )}
             <br />
             <br />
             <br />
@@ -60,6 +127,18 @@ export default function MentalMap() {
               ></iframe>
             </div>
             <br />
+            {activity.question1 && (
+              <>
+                <Button
+                  variant="contained"
+                  type="submit"
+                  style={{ width: "100%" }}
+                  onClick={handleSubmit}
+                >
+                  Marcar como finalizado
+                </Button>
+              </>
+            )}
             <br />
             <br />
             <br />

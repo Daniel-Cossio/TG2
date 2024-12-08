@@ -2,20 +2,24 @@ import React, { useState, useEffect } from "react";
 import ResponsiveAppBar from "../../responsiveappbar/ResponsiveAppBar";
 import axios from "axios";
 import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
 
-export default function JigSaw() {
+const JigSaw = ({ activityId }) => {
   const [activity, setActivity] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(`https://tg2-wfw8.onrender.com/activity/8`)
-      .then((response) => {
+    const fetchActivity = async () => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/activity/8`);
         setActivity(response.data);
-      })
-      .catch((error) => {
-        console.error("Error al obtener los detalles de la actividad:", error);
-      });
-  });
+      } catch (error) {
+        console.error("Error al obtener la actividad:", error);
+      }
+    };
+
+    fetchActivity();
+  }, [activityId]);
 
   if (!activity) {
     return <div>Cargando...</div>;
@@ -76,12 +80,12 @@ export default function JigSaw() {
                 {activity.evaluation}
               </>
             )}
-            {activity.example && (
-              <>
-                <h3>Ejemplo de tema para ejercicio JigSaw</h3>
-                {activity.example}
-              </>
-            )}
+            <br />
+            <br />
+            <br />
+            <Link to={`/activity/jigsaw/teamselect`}>
+              <Button size="small">Seleccionar equipo</Button>
+            </Link>
             <br />
             <br />
             <br />
@@ -95,4 +99,6 @@ export default function JigSaw() {
       <br />
     </>
   );
-}
+};
+
+export default JigSaw;
