@@ -118,6 +118,11 @@ function ResponsiveAppBar() {
                 Inicio
               </Button>
             </Link>
+            <Link to={`/answers/rate`}>
+              <Button color="inherit" style={{ color: "white" }}>
+                Calificar
+              </Button>
+            </Link>
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>

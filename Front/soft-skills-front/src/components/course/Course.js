@@ -3,7 +3,6 @@ import Grid from "@mui/material/Grid";
 import ResponsiveAppBar from "../responsiveappbar/ResponsiveAppBar";
 import Stack from "@mui/material/Stack";
 import { MdOutlinePlayArrow } from "react-icons/md";
-import Comments from "../comments/Comments";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import CardActions from "@mui/material/CardActions";
@@ -154,7 +153,6 @@ export default function Course() {
             </div>
 
             <br></br>
-            <Comments />
           </div>
         </Grid>
       </Grid>

@@ -49,7 +49,6 @@ export default function ProfileInDashboard() {
                       <div>
                         <b>{user.name}</b>
                       </div>
-                      <div>Ver logros</div>
                     </div>
                   </Box>
                 </Grid>
@@ -61,7 +60,7 @@ export default function ProfileInDashboard() {
                       height: "100%",
                     }}
                   >
-                    Mi perfil
+                    Mis notas
                   </Button>
                 </Grid>
               </Grid>
