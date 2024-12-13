@@ -12,6 +12,8 @@ TEST_ANSWER = {
     "activity_id": "1",
     "question_number": 1,
     "answer_text": "respuesta",
+    "rating": 5,
+    "comment": "xD"
 }
 
 

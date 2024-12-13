@@ -8,11 +8,9 @@ from main import app
 from model.decision import Decision
 
 TEST_DECISION = {
-    "user_email": "test@example.com",
-    "activity_id": 1,
-    "question_number": 1,
-    "answer_text": "Test answer",
-    "comment": "Test comment"
+    "id": 1,
+    "option1": "Test option 1",
+    "option2": "Test option 2",
 }
 
 @pytest.fixture(name="session")
@@ -35,28 +33,22 @@ def client_fixture(session: Session):
     app.dependency_overrides.clear()
 
 def test_create_decision(client: TestClient):
-    response = client.post("/decisions/", json=TEST_DECISION)
-    assert response.status_code == 200
+    response = client.post("/decision/", json=TEST_DECISION)
+    assert response.status_code == 201
     data = response.json()
-    assert data["user_email"] == TEST_DECISION["user_email"]
-    assert data["activity_id"] == TEST_DECISION["activity_id"]
-    assert data["question_number"] == TEST_DECISION["question_number"]
-    assert data["answer_text"] == TEST_DECISION["answer_text"]
-    assert data["comment"] == TEST_DECISION["comment"]
+    assert data["option1"] == TEST_DECISION["option1"]
+    assert data["option2"] == TEST_DECISION["option2"]
 
 def test_read_decision(client: TestClient, session: Session):
     decision = Decision(**TEST_DECISION)
     session.add(decision)
     session.commit()
 
-    response = client.get(f"/decisions/{decision.id}")
+    response = client.get(f"/decision/{decision.id}")
     assert response.status_code == 200
     data = response.json()
-    assert data["user_email"] == TEST_DECISION["user_email"]
-    assert data["activity_id"] == TEST_DECISION["activity_id"]
-    assert data["question_number"] == TEST_DECISION["question_number"]
-    assert data["answer_text"] == TEST_DECISION["answer_text"]
-    assert data["comment"] == TEST_DECISION["comment"]
+    assert data["option1"] == TEST_DECISION["option1"]
+    assert data["option2"] == TEST_DECISION["option2"]
 
 def test_update_decision(client: TestClient, session: Session):
     decision = Decision(**TEST_DECISION)
@@ -64,29 +56,23 @@ def test_update_decision(client: TestClient, session: Session):
     session.commit()
 
     updated_data = {
-        "user_email": "updated@example.com",
-        "activity_id": 2,
-        "question_number": 2,
-        "answer_text": "Updated answer",
-        "comment": "Updated comment"
+        "option1": "updated@example.com",
+        "option2": "2",
     }
 
-    response = client.put(f"/decisions/{decision.id}", json=updated_data)
+    response = client.patch(f"/decision/{decision.id}", json=updated_data)
     assert response.status_code == 200
     data = response.json()
-    assert data["user_email"] == updated_data["user_email"]
-    assert data["activity_id"] == updated_data["activity_id"]
-    assert data["question_number"] == updated_data["question_number"]
-    assert data["answer_text"] == updated_data["answer_text"]
-    assert data["comment"] == updated_data["comment"]
+    assert data["option1"] == updated_data["option1"]
+    assert data["option2"] == updated_data["option2"]
 
 def test_delete_decision(client: TestClient, session: Session):
     decision = Decision(**TEST_DECISION)
     session.add(decision)
     session.commit()
 
-    response = client.delete(f"/decisions/{decision.id}")
+    response = client.delete(f"/decision/{decision.id}")
     assert response.status_code == 200
 
-    response = client.get(f"/decisions/{decision.id}")
+    response = client.get(f"/decision/{decision.id}")
     assert response.status_code == 404

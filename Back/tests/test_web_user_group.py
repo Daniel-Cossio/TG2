@@ -33,8 +33,8 @@ def client_fixture(session: Session):
     app.dependency_overrides.clear()
 
 def test_create_user_group(client: TestClient):
-    response = client.post("/user_groups/", json=TEST_USER_GROUP)
-    assert response.status_code == 200
+    response = client.post("/user_group/", json=TEST_USER_GROUP)
+    assert response.status_code == 201
     data = response.json()
     assert data["user_email"] == TEST_USER_GROUP["user_email"]
     assert data["topic"] == TEST_USER_GROUP["topic"]
@@ -45,7 +45,7 @@ def test_read_user_group(client: TestClient, session: Session):
     session.add(user_group)
     session.commit()
 
-    response = client.get(f"/user_groups/{user_group.id}")
+    response = client.get(f"/user_group/{user_group.id}")
     assert response.status_code == 200
     data = response.json()
     assert data["user_email"] == TEST_USER_GROUP["user_email"]
@@ -63,7 +63,7 @@ def test_update_user_group(client: TestClient, session: Session):
         "team": "Updated Team"
     }
 
-    response = client.put(f"/user_groups/{user_group.id}", json=updated_data)
+    response = client.patch(f"/user_group/{user_group.id}", json=updated_data)
     assert response.status_code == 200
     data = response.json()
     assert data["user_email"] == updated_data["user_email"]
@@ -75,8 +75,8 @@ def test_delete_user_group(client: TestClient, session: Session):
     session.add(user_group)
     session.commit()
 
-    response = client.delete(f"/user_groups/{user_group.id}")
+    response = client.delete(f"/user_group/{user_group.id}")
     assert response.status_code == 200
 
-    response = client.get(f"/user_groups/{user_group.id}")
+    response = client.get(f"/user_group/{user_group.id}")
     assert response.status_code == 404

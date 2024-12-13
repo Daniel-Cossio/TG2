@@ -32,8 +32,8 @@ def client_fixture(session: Session):
     app.dependency_overrides.clear()
 
 def test_create_topic(client: TestClient):
-    response = client.post("/topics/", json=TEST_TOPIC)
-    assert response.status_code == 200
+    response = client.post("/topic/", json=TEST_TOPIC)
+    assert response.status_code == 201
     data = response.json()
     assert data["title"] == TEST_TOPIC["title"]
     assert data["description"] == TEST_TOPIC["description"]
@@ -43,7 +43,7 @@ def test_read_topic(client: TestClient, session: Session):
     session.add(topic)
     session.commit()
 
-    response = client.get(f"/topics/{topic.id}")
+    response = client.get(f"/topic/{topic.id}")
     assert response.status_code == 200
     data = response.json()
     assert data["title"] == TEST_TOPIC["title"]
@@ -59,7 +59,7 @@ def test_update_topic(client: TestClient, session: Session):
         "description": "Updated Description"
     }
 
-    response = client.put(f"/topics/{topic.id}", json=updated_data)
+    response = client.patch(f"/topic/{topic.id}", json=updated_data)
     assert response.status_code == 200
     data = response.json()
     assert data["title"] == updated_data["title"]
@@ -70,8 +70,8 @@ def test_delete_topic(client: TestClient, session: Session):
     session.add(topic)
     session.commit()
 
-    response = client.delete(f"/topics/{topic.id}")
+    response = client.delete(f"/topic/{topic.id}")
     assert response.status_code == 200
 
-    response = client.get(f"/topics/{topic.id}")
+    response = client.get(f"/topic/{topic.id}")
     assert response.status_code == 404

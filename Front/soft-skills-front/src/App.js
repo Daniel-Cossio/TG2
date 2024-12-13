@@ -4,7 +4,7 @@ import SignIn from "./components/signin/SignIn";
 import SignUp from "./components/signup/SignUp";
 import Dashboard from "./components/dashboard/Dashboard";
 import Course from "./components/course/Course";
-import Activity from "./components/activity/Activity";
+import Activity from "./components/activity/Activity.js";
 import MentalMap from "./components/customactivities/mentalmap/MentalMap";
 import Debate from "./components/customactivities/debate/Debate";
 import DecitionMaking from "./components/customactivities/decisionMaking/DecisionMaking";
