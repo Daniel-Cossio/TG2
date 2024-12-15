@@ -55,6 +55,7 @@ class AnswerUpdate(AnswerBase):
 
 
 class AnswerRead(AnswerBase):
+    id: int
     user_email: str
     activity_id: str
     question_number: int

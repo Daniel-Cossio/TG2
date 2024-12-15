@@ -17,6 +17,7 @@ const Calification = () => {
   const [answers, setAnswers] = useState([]);
   const [activities, setActivities] = useState({});
   const [ratings, setRatings] = useState({});
+  const [comments, setComments] = useState({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   useEffect(() => {
@@ -59,25 +60,36 @@ const Calification = () => {
     });
   };
 
+  const handleCommentChange = (event, questionNumber) => {
+    setComments({
+      ...comments,
+      [questionNumber]: event.target.value,
+    });
+  };
+
   const handleSubmitRating = async (questionNumber) => {
     const rating = ratings[questionNumber];
+    const comment = comments[questionNumber];
 
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-    if (rating !== undefined) {
+    if (rating !== undefined && comment !== undefined) {
       try {
-        await axios.patch("http://127.0.0.1:8000/answer/", {
-          question_number: questionNumber,
-          rating: rating,
-        });
+        currentAnswer.rating = rating;
+        currentAnswer.comment = comment;
+
+        await axios.patch(
+          `http://127.0.0.1:8000/answer/${currentAnswer.id}`,
+          currentAnswer
+        );
         alert(
-          `Calificación para la pregunta ${questionNumber} guardada con éxito.`
+          `Calificación y comentario para la pregunta ${questionNumber} guardados con éxito.`
         );
         // Avanzar a la siguiente pregunta
         setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
       } catch (error) {
-        console.error("Error al enviar la calificación:", error);
+        console.error("Error al enviar la calificación y comentario:", error);
         alert(
-          `Error al enviar la calificación para la pregunta ${questionNumber}.`
+          `Error al enviar la calificación y comentario para la pregunta ${questionNumber}.`
         );
       }
     }
@@ -129,6 +141,18 @@ const Calification = () => {
                       inputProps={{ min: 0, max: 5 }}
                       style={{ marginRight: "10px" }}
                     />
+                    <TextField
+                      label="Comentario"
+                      type="text"
+                      value={comments[currentAnswer.question_number] || ""}
+                      onChange={(event) =>
+                        handleCommentChange(
+                          event,
+                          currentAnswer.question_number
+                        )
+                      }
+                      style={{ marginRight: "10px" }}
+                    />
                     <Button
                       variant="contained"
                       color="primary"
@@ -136,7 +160,7 @@ const Calification = () => {
                         handleSubmitRating(currentAnswer.question_number)
                       }
                     >
-                      Enviar Calificación
+                      Enviar Calificación y Comentario
                     </Button>
                   </ListItem>
                 </List>
