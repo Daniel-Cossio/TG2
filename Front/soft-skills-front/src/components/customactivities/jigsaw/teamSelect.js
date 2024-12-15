@@ -16,11 +16,17 @@ import {
   Container,
 } from "@mui/material";
 
-const TeamSelect = () => {
+const TeamSelect = ({ userEmail }) => {
   const [userGroup, setUserGroup] = useState(null);
   const { user } = useAuth0();
   const [role, setRole] = useState("");
   const [answer, setAnswer] = useState("");
+  const [answer2, setAnswer2] = useState("");
+  const [hasAnsweredQuestion1, setHasAnsweredQuestion1] = useState(false);
+  const [allResponses, setAllResponses] = useState([]);
+  const [userResponses, setUserResponses] = useState([]);
+  const [otherUserResponses, setOtherUserResponses] = useState([]);
+  const [userGroups, setUserGroups] = useState([]);
 
   const navigate = useNavigate();
 
@@ -40,6 +46,58 @@ const TeamSelect = () => {
       assignTeam();
     }
   }, [user]);
+
+  useEffect(() => {
+    // Consulta todas las respuestas al cargar el componente
+    axios
+      .get("http://127.0.0.1:8000/answer")
+      .then((response) => {
+        console.log("All responses:", response.data); // Debugging
+        setAllResponses(response.data);
+      })
+      .catch((error) => {
+        console.error("Error al obtener todas las respuestas:", error);
+      });
+
+    // Consulta todos los grupos de usuarios al cargar el componente
+    axios
+      .get("http://127.0.0.1:8000/user_group")
+      .then((response) => {
+        console.log("User groups:", response.data); // Debugging
+        setUserGroups(response.data);
+        // Encuentra el grupo del usuario actual
+        const currentUserGroup = response.data.find((group) =>
+          group.members.includes(user.email)
+        );
+        setUserGroup(currentUserGroup);
+      })
+      .catch((error) => {
+        console.error("Error al obtener los grupos de usuarios:", error);
+      });
+  }, [user]);
+
+  useEffect(() => {
+    if (user && user.email) {
+      // Filtra las respuestas del usuario por activity_id y user_email
+      const filteredUserResponses = allResponses.filter(
+        (response) =>
+          response.activity_id === "8" && response.user_email === user.email
+      );
+      setUserResponses(filteredUserResponses);
+
+      // Verifica si el usuario ya ha respondido a la pregunta 1
+      const answeredQuestion1 = filteredUserResponses.some(
+        (response) => response.question_number === 1
+      );
+      setHasAnsweredQuestion1(answeredQuestion1);
+
+      const filteredOtherUserResponses = allResponses.filter(
+        (response) =>
+          response.activity_id === "8" && response.user_email !== user.email
+      );
+      setOtherUserResponses(filteredOtherUserResponses);
+    }
+  }, [allResponses, user, userGroup]);
 
   const handleRoleChange = (event) => {
     setRole(event.target.value);
@@ -68,6 +126,32 @@ const TeamSelect = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error("Error al enviar la respuesta:", error);
+      alert(
+        `Ya hay una respuesta guardada a la pregunta ${answerData.question_number}.`
+      );
+    }
+  };
+
+  const handleSubmitQuestion2 = async (event) => {
+    event.preventDefault();
+    const answerData = {
+      user_email: user.email,
+      activity_id: "8",
+      question_number: 2,
+      answer_text: answer2,
+      rating: -1,
+      comment: "",
+    };
+
+    try {
+      await axios.post("http://127.0.0.1:8000/answer", answerData);
+      // Actualiza las respuestas del usuario después de enviar la respuesta
+      setUserResponses([...userResponses, answerData]);
+      alert(`Respuesta Enviada.`);
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error al guardar la respuesta:", error);
       alert(
         `Ya hay una respuesta guardada a la pregunta ${answerData.question_number}.`
       );
@@ -119,52 +203,93 @@ const TeamSelect = () => {
                   planeta, como el aumento del nivel del mar y el derretimiento
                   de los glaciares.
                 </Typography>
-                <form onSubmit={handleSubmit}>
-                  <FormControl fullWidth margin="normal">
-                    <InputLabel id="role-select-label">
-                      Seleccione su rol
-                    </InputLabel>
-                    <Select
-                      labelId="role-select-label"
-                      value={role}
-                      onChange={handleRoleChange}
-                      required
-                    >
-                      <MenuItem value="">
-                        <em>Seleccione...</em>
-                      </MenuItem>
-                      <MenuItem value="Persona A">Persona A</MenuItem>
-                      <MenuItem value="Persona B">Persona B</MenuItem>
-                    </Select>
-                  </FormControl>
-                  {role && (
-                    <>
-                      <Typography variant="body1" paragraph>
-                        <strong>
-                          Usted ha seleccionado ser {role}. Por favor,
-                          investigue la parte correspondiente y envíe su
-                          respuesta a continuación.
-                        </strong>
-                      </Typography>
-                      <FormControl fullWidth margin="normal">
-                        <TextField
-                          label="Respuesta de la investigación"
-                          value={answer}
-                          onChange={(e) => setAnswer(e.target.value)}
-                          required
-                        />
-                      </FormControl>
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        className="mt-3"
+                {!hasAnsweredQuestion1 ? (
+                  <form onSubmit={handleSubmit}>
+                    <FormControl fullWidth margin="normal">
+                      <InputLabel id="role-select-label">
+                        Seleccione su rol
+                      </InputLabel>
+                      <Select
+                        labelId="role-select-label"
+                        value={role}
+                        onChange={handleRoleChange}
+                        required
                       >
-                        Enviar Respuesta
-                      </Button>
-                    </>
-                  )}
-                </form>
+                        <MenuItem value="">
+                          <em>Seleccione...</em>
+                        </MenuItem>
+                        <MenuItem value="Persona A">Persona A</MenuItem>
+                        <MenuItem value="Persona B">Persona B</MenuItem>
+                      </Select>
+                    </FormControl>
+                    {role && (
+                      <>
+                        <Typography variant="body1" paragraph>
+                          <strong>
+                            Usted ha seleccionado ser {role}. Por favor,
+                            investigue la parte correspondiente y envíe su
+                            respuesta a continuación.
+                          </strong>
+                        </Typography>
+                        <FormControl fullWidth margin="normal">
+                          <TextField
+                            label="Respuesta de la investigación"
+                            value={answer}
+                            onChange={(e) => setAnswer(e.target.value)}
+                            required
+                          />
+                        </FormControl>
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          color="primary"
+                          className="mt-3"
+                        >
+                          Enviar Respuesta
+                        </Button>
+                      </>
+                    )}
+                  </form>
+                ) : (
+                  <form onSubmit={handleSubmitQuestion2}>
+                    <FormControl fullWidth margin="normal">
+                      <TextField
+                        label="Ya has respondido por primera vez, ahora basado en las respuestas de tu equipo puedes complementar y mejorar tu investigación"
+                        value={answer2}
+                        onChange={(e) => setAnswer2(e.target.value)}
+                        required
+                      />
+                    </FormControl>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      className="mt-3"
+                    >
+                      Enviar Respuesta
+                    </Button>
+                  </form>
+                )}
+                <div>
+                  <Typography variant="h6" component="p">
+                    <strong>Tus respuestas:</strong>
+                  </Typography>
+                  <ul>
+                    {userResponses.map((response, index) => (
+                      <li key={index}>{response.answer_text}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <Typography variant="h6" component="p">
+                    <strong>Respuestas de tu equipo:</strong>
+                  </Typography>
+                  <ul>
+                    {otherUserResponses.map((response, index) => (
+                      <li key={index}>{response.answer_text}</li>
+                    ))}
+                  </ul>
+                </div>
               </>
             )}
           </Grid>

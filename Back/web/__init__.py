@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from web import comment, course, user, activity, answer, user_group, topic, decision
+from web import comment, course, user, activity, answer, user_group, topic, decision, jigsaw
 
 api = APIRouter()
 
@@ -51,4 +51,10 @@ api.include_router(
     decision.router,
     prefix="/decision",
     tags=["Decisiones"],
+)
+
+api.include_router(
+    jigsaw.router,
+    prefix="/jigsaw",
+    tags=["jigsaw"],
 )
