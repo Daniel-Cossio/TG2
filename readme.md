@@ -32,6 +32,8 @@ Con python ya instalado ingresar a la carpeta Back y usar los siguientes comando
 
 "poetry install --no-root"
 
+"python main.py"
+
 ### Frontend
 
 1. Clona el repositorio :
