@@ -50,9 +50,37 @@ y "npm start" para ejecutar.
 
 TG2/
 ├── Back/ # Backend construido con FastAPI
+
 │ ├── main.py # Punto de entrada del backend
+
 │ ├── pyproject.toml # Dependencias del backend
+
 │ └── ... # Otros archivos del backend
+
 ├── Front/ # Frontend construido con React
+
 │ └── soft-skills-front/ # Aplicación frontend
+
 └── README.md # Documentación del proyecto
+
+# Diagrama de Arquitectura
+
+A continuación se muestra un diagrama básico de la arquitectura para una aplicación que utiliza FastAPI en el backend, React en el frontend y una base de datos SQLite:
+
+```plaintext
++---------------------+         +-------------------------+
+|     Frontend        |         |       Backend           |
+|     (React)         |         |      (FastAPI)          |
+|                     |         |                         |
+|   - UI Components   |         |   - RESTful API         |
+|   - State Management| <-----> |   - Request Handling    |
+|   - Routing         |   API   |   - Business Logic      |
+|   - HTTP Requests   |         |   - Database Operations |
++---------------------+         +-------------------------+
+                                    |
+                                    |
+                            +----------------+
+                            |   Database      |
+                            |    (SQLite)     |
+                            +----------------+
+```
