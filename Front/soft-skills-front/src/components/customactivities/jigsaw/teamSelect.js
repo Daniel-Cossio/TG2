@@ -16,6 +16,8 @@ import {
   Container,
   Snackbar,
   Alert,
+  Card,
+  CardContent,
 } from "@mui/material";
 
 const TeamSelect = ({ userEmail }) => {
@@ -269,6 +271,8 @@ const TeamSelect = ({ userEmail }) => {
                         required
                       />
                     </FormControl>
+                    <br />
+                    <br />
                     <Button
                       type="submit"
                       variant="contained"
@@ -279,25 +283,46 @@ const TeamSelect = ({ userEmail }) => {
                     </Button>
                   </form>
                 )}
+                <br />
                 <div>
                   <Typography variant="h6" component="p">
                     <strong>Tus respuestas:</strong>
                   </Typography>
-                  <ul>
+                  <br />
+                  <br />
+                  <Grid container spacing={2}>
                     {userResponses.map((response, index) => (
-                      <li key={index}>{response.answer_text}</li>
+                      <Grid item xs={12} sm={6} md={4} key={index}>
+                        <Card style={{ marginBottom: "16px" }}>
+                          <CardContent>
+                            <Typography variant="body2" component="p">
+                              {response.answer_text}
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Grid>
                     ))}
-                  </ul>
+                  </Grid>
                 </div>
                 <div>
+                  <br />
+                  <br />
                   <Typography variant="h6" component="p">
                     <strong>Respuestas de tu equipo:</strong>
                   </Typography>
-                  <ul>
+                  <Grid container spacing={2}>
                     {otherUserResponses.map((response, index) => (
-                      <li key={index}>{response.answer_text}</li>
+                      <Grid item xs={12} sm={6} md={4} key={index}>
+                        <Card style={{ marginBottom: "16px" }}>
+                          <CardContent>
+                            <Typography variant="body2" component="p">
+                              {response.answer_text}
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Grid>
                     ))}
-                  </ul>
+                  </Grid>
                 </div>
               </>
             )}

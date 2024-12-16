@@ -109,130 +109,137 @@ export default function Debate() {
   return (
     <>
       <ResponsiveAppBar />
-      <br />
-      <Grid
-        container
-        style={{
-          height: "95vh",
-          paddingTop: "5%",
-          paddingBottom: "5%",
-          paddingLeft: "10%",
-          paddingRight: "10%",
-        }}
-      >
-        <div>
-          <div className="flex items-center space-x-2">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-              {activity.title}
-            </h1>
-            <h3>Objetivo</h3>
-            {activity.objective}
-            <h3>Metodología</h3>
-            {activity.metodology}
-            <h3>Recursos</h3>
-            {activity.resources}
-            <h3>Evaluación</h3>
-            <div dangerouslySetInnerHTML={{ __html: activityEvaluation }} />
-            <br />
-            <div>
-              <h3>Ejemplo</h3>
-              <div dangerouslySetInnerHTML={{ __html: activityExample }} />
-            </div>
 
-            {activity.question1 && (
-              <>
-                <h3>Preguntas</h3>
-                <ul>
-                  {activity.question1 && (
-                    <li
-                      style={{
-                        padding: "10px",
-                      }}
-                    >
-                      {activity.question1} <br />
-                      <TextField
-                        id="answer1"
-                        value={answers.answer1}
-                        onChange={(e) => handleChange(e, "answer1")}
-                        variant="outlined"
-                        fullWidth
-                      />
-                    </li>
-                  )}
-                  {activity.question2 && (
-                    <li>
-                      {activity.question2} <br />
-                      <TextField
-                        id="answer2"
-                        value={answers.answer2}
-                        onChange={(e) => handleChange(e, "answer2")}
-                        variant="outlined"
-                        fullWidth
-                      />{" "}
-                    </li>
-                  )}
-                  {activity.question3 && (
-                    <li>
-                      {activity.question3} <br />
-                      <TextField
-                        id="answer3"
-                        value={answers.answer3}
-                        onChange={(e) => handleChange(e, "answer3")}
-                        variant="outlined"
-                        fullWidth
-                      />
-                    </li>
-                  )}
-                  {activity.question4 && (
-                    <li>
-                      {activity.question4} <br />
-                      <TextField
-                        id="answer4"
-                        value={answers.answer4}
-                        onChange={(e) => handleChange(e, "answer4")}
-                        variant="outlined"
-                        fullWidth
-                      />
-                    </li>
-                  )}
-                  {activity.question5 && (
-                    <li>
-                      {activity.question5} <br />
-                      <TextField
-                        id="answer5"
-                        value={answers.answer5}
-                        onChange={(e) => handleChange(e, "answer5")}
-                        variant="outlined"
-                        fullWidth
-                      />
-                    </li>
-                  )}
-                </ul>
-              </>
-            )}
-            <br />
-            <br />
-            {activity.question1 && (
-              <>
-                <Button
-                  variant="contained"
-                  type="submit"
-                  style={{ width: "100%" }}
-                  onClick={handleSubmit}
-                >
-                  Finalizar
-                </Button>
-              </>
-            )}
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
+      <Container sx={{ paddingTop: "5%", paddingBottom: "5%" }}>
+        <Grid
+          container
+          style={{
+            height: "95vh",
+            paddingTop: "5%",
+            paddingBottom: "5%",
+            paddingLeft: "10%",
+            paddingRight: "10%",
+          }}
+        >
+          <div>
+            <div className="flex items-center space-x-2">
+              <Typography
+                variant="h3"
+                component="h1"
+                gutterBottom
+                sx={{ color: "primary.main", textAlign: "center" }}
+              >
+                {activity.title}
+              </Typography>
+              <br />
+              <h3>Objetivo</h3>
+              {activity.objective}
+              <h3>Metodología</h3>
+              {activity.metodology}
+              <h3>Recursos</h3>
+              {activity.resources}
+              <h3>Evaluación</h3>
+              <div dangerouslySetInnerHTML={{ __html: activityEvaluation }} />
+              <br />
+              <div>
+                <h3>Ejemplo</h3>
+                <div dangerouslySetInnerHTML={{ __html: activityExample }} />
+              </div>
+              {activity.question1 && (
+                <>
+                  <h3>Preguntas</h3>
+                  <ul>
+                    {activity.question1 && (
+                      <li
+                        style={{
+                          padding: "10px",
+                        }}
+                      >
+                        {activity.question1} <br />
+                        <TextField
+                          id="answer1"
+                          value={answers.answer1}
+                          onChange={(e) => handleChange(e, "answer1")}
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </li>
+                    )}
+                    {activity.question2 && (
+                      <li>
+                        {activity.question2} <br />
+                        <TextField
+                          id="answer2"
+                          value={answers.answer2}
+                          onChange={(e) => handleChange(e, "answer2")}
+                          variant="outlined"
+                          fullWidth
+                        />{" "}
+                      </li>
+                    )}
+                    {activity.question3 && (
+                      <li>
+                        {activity.question3} <br />
+                        <TextField
+                          id="answer3"
+                          value={answers.answer3}
+                          onChange={(e) => handleChange(e, "answer3")}
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </li>
+                    )}
+                    {activity.question4 && (
+                      <li>
+                        {activity.question4} <br />
+                        <TextField
+                          id="answer4"
+                          value={answers.answer4}
+                          onChange={(e) => handleChange(e, "answer4")}
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </li>
+                    )}
+                    {activity.question5 && (
+                      <li>
+                        {activity.question5} <br />
+                        <TextField
+                          id="answer5"
+                          value={answers.answer5}
+                          onChange={(e) => handleChange(e, "answer5")}
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </li>
+                    )}
+                  </ul>
+                </>
+              )}
+              <br />
+              <br />
+              {activity.question1 && (
+                <>
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    style={{ width: "100%" }}
+                    onClick={handleSubmit}
+                  >
+                    Finalizar
+                  </Button>
+                </>
+              )}
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+            </div>
           </div>
-        </div>
-      </Grid>
+        </Grid>
+      </Container>
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

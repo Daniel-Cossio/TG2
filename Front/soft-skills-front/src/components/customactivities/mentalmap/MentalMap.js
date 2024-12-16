@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from "react";
 import ResponsiveAppBar from "../../responsiveappbar/ResponsiveAppBar";
 import axios from "axios";
-import Grid from "@mui/material/Grid";
 import DOMPurify from "dompurify";
-import { Button, Snackbar, Alert } from "@mui/material";
+import {
+  Button,
+  Snackbar,
+  Alert,
+  Grid,
+  Container,
+  Typography,
+  Stack,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -26,15 +33,17 @@ export default function MentalMap() {
       .catch((error) => {
         console.error("Error al obtener los detalles de la actividad:", error);
       });
-  });
+  }, []);
+
   var activityExample;
-  if (activity != null && activity.example != null) {
+  if (activity && activity.example) {
     activityExample = DOMPurify.sanitize(activity.example);
   } else {
     activityExample = "";
   }
+
   if (!activity) {
-    return <div>Cargando...</div>;
+    return <Typography variant="h6">Cargando...</Typography>;
   }
 
   const handleSubmit = () => {
@@ -81,82 +90,102 @@ export default function MentalMap() {
   return (
     <>
       <ResponsiveAppBar />
-      <br />
-      <Grid
-        container
-        style={{
-          height: "95vh",
-          paddingTop: "5%",
-          paddingBottom: "5%",
-          paddingLeft: "10%",
-          paddingRight: "10%",
-        }}
-      >
-        <div>
-          <div className="flex items-center space-x-2">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-              {activity.title}
-            </h1>
-            <h3>Objetivo</h3>
-            {activity.objective}
-            <h3>Metodología</h3>
-            {activity.metodology}
-            <h3>Recursos</h3>
-            {activity.resources}
-            <h3>Introducción</h3>
-            {activity.introduction}
-            {activity.analisis && (
-              <>
-                <h3>Análisis de la situación</h3>
-                {activity.analisis}
-              </>
-            )}
-            {activity.evaluation && (
-              <>
-                <h3>Evaluación de escenarios</h3>
-                {activity.evaluation}
-              </>
-            )}
-            {activityExample && (
-              <div>
-                <h2>Actividad</h2>{" "}
-                <span className="max-w-prose text-gray-500 md:text-xl/relaxed dark:text-gray-400">
-                  <div dangerouslySetInnerHTML={{ __html: activityExample }} />
-                </span>
-              </div>
-            )}
-            <br />
-            <br />
-            <br />
-            <div>
+      <Container style={{ paddingTop: "5%", paddingBottom: "5%" }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Stack spacing={4}>
+              <Typography
+                variant="h3"
+                component="h1"
+                gutterBottom
+                sx={{ color: "primary.main", textAlign: "center" }}
+              >
+                {activity.title}
+              </Typography>
+
+              <Typography variant="h5" component="h2" gutterBottom>
+                Objetivo
+              </Typography>
+              <Typography variant="body1" paragraph>
+                {activity.objective}
+              </Typography>
+
+              <Typography variant="h5" component="h2" gutterBottom>
+                Metodología
+              </Typography>
+              <Typography variant="body1" paragraph>
+                {activity.metodology}
+              </Typography>
+
+              <Typography variant="h5" component="h2" gutterBottom>
+                Recursos
+              </Typography>
+              <Typography variant="body1" paragraph>
+                {activity.resources}
+              </Typography>
+
+              <Typography variant="h5" component="h2" gutterBottom>
+                Introducción
+              </Typography>
+              <Typography variant="body1" paragraph>
+                {activity.introduction}
+              </Typography>
+
+              {activity.analisis && (
+                <>
+                  <Typography variant="h5" component="h2" gutterBottom>
+                    Análisis de la situación
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    {activity.analisis}
+                  </Typography>
+                </>
+              )}
+
+              {activity.evaluation && (
+                <>
+                  <Typography variant="h5" component="h2" gutterBottom>
+                    Evaluación de escenarios
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    {activity.evaluation}
+                  </Typography>
+                </>
+              )}
+
+              {activityExample && (
+                <>
+                  <Typography variant="h5" component="h2" gutterBottom>
+                    Actividad
+                  </Typography>
+                  <div
+                    dangerouslySetInnerHTML={{ __html: activityExample }}
+                    style={{ marginBottom: "20px" }}
+                  />
+                </>
+              )}
+
               <iframe
                 style={{ width: "100%", height: "700px" }}
                 src="https://viewer.diagrams.net/?highlight=FFFFFF&edit=https%3A%2F%2Fdrive.google.com%2Ffile%2Fd%2F1L9-7wjPNLXcUDmBdhkp-Og5nT7Aws27g%2Fview%3Fusp%3Dsharing&nav=1&title=Diagrama%20sin%20t%C3%ADtulo.drawio#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1L9-7wjPNLXcUDmBdhkp-Og5nT7Aws27g%26export%3Ddownload"
                 scrolling="no"
                 title="Mental Map Diagram"
               ></iframe>
-            </div>
-            <br />
-            {activity.question1 && (
-              <>
+
+              {activity.question1 && (
                 <Button
                   variant="contained"
-                  type="submit"
-                  style={{ width: "100%" }}
+                  color="primary"
                   onClick={handleSubmit}
                 >
                   Marcar como finalizado
                 </Button>
-              </>
-            )}
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-          </div>
-        </div>
-      </Grid>
+              )}
+            </Stack>
+          </Grid>
+        </Grid>
+      </Container>
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
@@ -171,8 +200,6 @@ export default function MentalMap() {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-      <br />
-      <br />
     </>
   );
 }

@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 import ResponsiveAppBar from "../responsiveappbar/ResponsiveAppBar";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import DOMPurify from "dompurify";
 import {
   Button,
-  FormControl,
   Typography,
   Container,
   Snackbar,
   Alert,
+  TextField,
 } from "@mui/material";
-import TextField from "@mui/material/TextField";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Activity() {
@@ -21,7 +20,6 @@ export default function Activity() {
   const activityId = id;
   const { user, isAuthenticated, isLoading } = useAuth0();
   const [activity, setActivity] = useState(null);
-  const navigate = useNavigate();
 
   const [answers, setAnswers] = useState({
     answer1: "",
@@ -39,7 +37,6 @@ export default function Activity() {
     if (isAuthenticated) {
       axios
         .get(`http://127.0.0.1:8000/activity/${activityId}`)
-        //.get(`https://tg2-wfw8.onrender.com/activity/${activityId}`)
         .then((response) => {
           setActivity(response.data);
         })
@@ -53,18 +50,19 @@ export default function Activity() {
   }, [activityId, isAuthenticated]);
 
   if (isLoading || !activity) {
-    return <div>Cargando...</div>;
+    return (
+      <Typography variant="h5" sx={{ textAlign: "center", marginTop: "20vh" }}>
+        Cargando...
+      </Typography>
+    );
   }
 
-  var activityExample;
-  if (activity != null && activity.example != null) {
-    activityExample = DOMPurify.sanitize(activity.example, {
-      ADD_TAGS: ["iframe"],
-      ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"],
-    });
-  } else {
-    activityExample = "";
-  }
+  const activityExample = activity.example
+    ? DOMPurify.sanitize(activity.example, {
+        ADD_TAGS: ["iframe"],
+        ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"],
+      })
+    : "";
 
   const handleChange = (e, question) => {
     setAnswers({ ...answers, [question]: e.target.value });
@@ -89,7 +87,7 @@ export default function Activity() {
         };
         try {
           await axios.post("http://127.0.0.1:8000/answer", answerData);
-          setSnackbarMessage(`Respuestas guardadas con exito.`);
+          setSnackbarMessage(`Respuestas guardadas con éxito.`);
           setSnackbarSeverity("success");
           setSnackbarOpen(true);
         } catch (error) {
@@ -98,15 +96,13 @@ export default function Activity() {
             error
           );
           setSnackbarMessage(
-            `Ya hay una respuesta guardada para esta actividad`
+            `Ya hay una respuesta guardada para esta actividad.`
           );
           setSnackbarSeverity("error");
           setSnackbarOpen(true);
         }
       }
     });
-
-    //navigate("/dashboard");
   };
 
   const handleSnackbarClose = () => {
@@ -116,181 +112,134 @@ export default function Activity() {
   return (
     <>
       <ResponsiveAppBar />
-      <br />
-      <Grid
-        container
-        spacing={2}
-        style={{ padding: "10vh", height: "90vh", paddingLeft: "200px" }}
-      >
-        <Grid item xs={12}>
-          <Stack spacing={2}>
-            <div>
-              <Grid container spacing={4} style={{ padding: "5vh" }}>
-                <Grid item xs={8}>
-                  <div className="flex items-center space-x-2">
-                    <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                      {activity.title}
-                    </h1>
-                    {activity.objective && (
-                      <>
-                        <h3>Objetivo</h3>
-                        {activity.objective}
-                      </>
-                    )}
-                    {activity.metodology && (
-                      <>
-                        <h3>Metodología</h3>
-                        {activity.metodology}
-                      </>
-                    )}
-                    {activity.resources && (
-                      <>
-                        <h3>Recursos</h3>
-                        {activity.resources}
-                      </>
-                    )}
-                    {activity.introduction && (
-                      <>
-                        <h3>Introducción</h3>
-                        {activity.introduction}
-                      </>
-                    )}
-                    {activity.analisis && (
-                      <>
-                        <h3>Análisis de la situación</h3>
-                        {activity.analisis}
-                      </>
-                    )}
-                    {activity.evaluation && (
-                      <>
-                        <h3>Evaluación de escenarios</h3>
-                        {activity.evaluation}
-                      </>
-                    )}
-                  </div>
-                  {activityExample && (
-                    <div>
-                      <h2>Actividad</h2>{" "}
-                      <span className="max-w-prose text-gray-500 md:text-xl/relaxed dark:text-gray-400">
-                        <div
-                          dangerouslySetInnerHTML={{ __html: activityExample }}
-                        />
-                      </span>
-                    </div>
-                  )}
-                </Grid>
-              </Grid>
+      <Container sx={{ paddingTop: "5%", paddingBottom: "5%" }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Stack spacing={3}>
+              <Typography
+                variant="h3"
+                component="h1"
+                gutterBottom
+                sx={{ color: "primary.main", textAlign: "center" }}
+              >
+                {activity.title}
+              </Typography>
+              {activity.objective && (
+                <>
+                  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                    Objetivo
+                  </Typography>
+                  <Typography variant="body1">{activity.objective}</Typography>
+                </>
+              )}
+              {activity.metodology && (
+                <>
+                  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                    Metodología
+                  </Typography>
+                  <Typography variant="body1">{activity.metodology}</Typography>
+                </>
+              )}
+              {activity.resources && (
+                <>
+                  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                    Recursos
+                  </Typography>
+                  <Typography variant="body1">{activity.resources}</Typography>
+                </>
+              )}
+              {activity.introduction && (
+                <>
+                  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                    Introducción
+                  </Typography>
+                  <Typography variant="body1">
+                    {activity.introduction}
+                  </Typography>
+                </>
+              )}
+              {activity.analisis && (
+                <>
+                  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                    Análisis de la situación
+                  </Typography>
+                  <Typography variant="body1">{activity.analisis}</Typography>
+                </>
+              )}
+              {activity.evaluation && (
+                <>
+                  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                    Evaluación de escenarios
+                  </Typography>
+                  <Typography variant="body1">{activity.evaluation}</Typography>
+                </>
+              )}
+              {activityExample && (
+                <div>
+                  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                    Actividad
+                  </Typography>
+                  <div
+                    dangerouslySetInnerHTML={{ __html: activityExample }}
+                    style={{ marginBottom: "20px" }}
+                  />
+                </div>
+              )}
               {activity.question1 && (
                 <>
-                  <h3>Preguntas</h3>
-                  <ul>
-                    {activity.question1 && (
-                      <li
-                        style={{
-                          padding: "10px",
-                        }}
-                      >
-                        {activity.question1} <br />
-                        <TextField
-                          id="answer1"
-                          value={answers.answer1}
-                          onChange={(e) => handleChange(e, "answer1")}
-                          variant="outlined"
-                          fullWidth
-                        />
-                      </li>
-                    )}
-                    {activity.question2 && (
-                      <li>
-                        {activity.question2} <br />
-                        <TextField
-                          id="answer2"
-                          value={answers.answer2}
-                          onChange={(e) => handleChange(e, "answer2")}
-                          variant="outlined"
-                          fullWidth
-                        />{" "}
-                      </li>
-                    )}
-                    {activity.question3 && (
-                      <li>
-                        {activity.question3} <br />
-                        <TextField
-                          id="answer3"
-                          value={answers.answer3}
-                          onChange={(e) => handleChange(e, "answer3")}
-                          variant="outlined"
-                          fullWidth
-                        />
-                      </li>
-                    )}
-                    {activity.question4 && (
-                      <li>
-                        {activity.question4} <br />
-                        <TextField
-                          id="answer4"
-                          value={answers.answer4}
-                          onChange={(e) => handleChange(e, "answer4")}
-                          variant="outlined"
-                          fullWidth
-                        />
-                      </li>
-                    )}
-                    {activity.question5 && (
-                      <li>
-                        {activity.question5} <br />
-                        <TextField
-                          id="answer5"
-                          value={answers.answer5}
-                          onChange={(e) => handleChange(e, "answer5")}
-                          variant="outlined"
-                          fullWidth
-                        />
-                      </li>
-                    )}
+                  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                    Preguntas
+                  </Typography>
+                  <ul style={{ listStyleType: "none", padding: 0 }}>
+                    {Object.keys(answers).map((key, index) => {
+                      const questionKey = `question${index + 1}`;
+                      if (activity[questionKey]) {
+                        return (
+                          <li key={key} style={{ padding: "10px 0" }}>
+                            <Typography variant="body1" paragraph>
+                              {activity[questionKey]}
+                            </Typography>
+                            <TextField
+                              id={key}
+                              value={answers[key]}
+                              onChange={(e) => handleChange(e, key)}
+                              variant="outlined"
+                              fullWidth
+                            />
+                          </li>
+                        );
+                      }
+                      return null;
+                    })}
                   </ul>
                 </>
               )}
-              <br />
-              <br />
-              {activity.question1 && (
-                <>
-                  <Button
-                    variant="contained"
-                    type="submit"
-                    style={{ width: "100%" }}
-                    onClick={handleSubmit}
-                  >
-                    Finalizar
-                  </Button>
-                </>
-              )}
-            </div>
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-          </Stack>
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={handleSubmit}
+              >
+                Finalizar
+              </Button>
+            </Stack>
+          </Grid>
         </Grid>
-      </Grid>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
           onClose={handleSnackbarClose}
-          severity={snackbarSeverity}
-          sx={{ width: "100%" }}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-      <br />
-      <br />
+          <Alert
+            onClose={handleSnackbarClose}
+            severity={snackbarSeverity}
+            sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+      </Container>
     </>
   );
 }

@@ -23,12 +23,11 @@ export default function Album() {
   const { isAuthenticated, isLoading } = useAuth0();
 
   useEffect(() => {
-    // Hacer una solicitud a tu API para obtener la lista de cursos
     axios
       .get("http://127.0.0.1:8000/courses")
       //.get("https://tg2-wfw8.onrender.com/courses")
       .then((response) => {
-        setCourses(response.data); // Actualiza el estado con los datos de los cursos
+        setCourses(response.data);
       })
       .catch((error) => {
         console.error("Error al obtener los cursos:", error);

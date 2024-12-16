@@ -65,13 +65,13 @@ export default function SignUp() {
 
     if (response.ok) {
       setMessage("Usuario registrado con éxito");
-      setMessageColor("green"); // Cambia el color del mensaje a verde
+      setMessageColor("green");
       setEmail("");
       setPassword("");
       setFullname("");
     } else {
       setMessage("Error al registrar el usuario");
-      setMessageColor("red"); // Cambia el color del mensaje a rojo
+      setMessageColor("red");
     }
   };
 
