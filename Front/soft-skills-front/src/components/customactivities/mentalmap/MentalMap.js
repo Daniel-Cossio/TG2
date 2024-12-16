@@ -3,13 +3,16 @@ import ResponsiveAppBar from "../../responsiveappbar/ResponsiveAppBar";
 import axios from "axios";
 import Grid from "@mui/material/Grid";
 import DOMPurify from "dompurify";
-import { Button } from "@mui/material";
+import { Button, Snackbar, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export default function MentalMap() {
   const [activity, setActivity] = useState(null);
   const { user } = useAuth0();
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const navigate = useNavigate();
 
@@ -52,22 +55,29 @@ export default function MentalMap() {
           `Respuesta ${answerData.question_number} enviada:`,
           response.data
         );
-        alert(
+        setSnackbarMessage(
           `Respuesta a pregunta ${answerData.question_number} guardada con éxito.`
         );
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
       })
       .catch((error) => {
         console.error(
           `Error al enviar respuesta ${answerData.question_number}:`,
           error
         );
-        alert(
+        setSnackbarMessage(
           `Ya hay una respuesta guardada a la pregunta ${answerData.question_number}.`
         );
-      }, []);
-
-    navigate("/dashboard");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      });
   };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
     <>
       <ResponsiveAppBar />
@@ -147,6 +157,20 @@ export default function MentalMap() {
           </div>
         </div>
       </Grid>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       <br />
       <br />
     </>

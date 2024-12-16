@@ -14,6 +14,8 @@ import {
   FormControl,
   Typography,
   Container,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 const TeamSelect = ({ userEmail }) => {
@@ -27,6 +29,9 @@ const TeamSelect = ({ userEmail }) => {
   const [userResponses, setUserResponses] = useState([]);
   const [otherUserResponses, setOtherUserResponses] = useState([]);
   const [userGroups, setUserGroups] = useState([]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const navigate = useNavigate();
 
@@ -119,16 +124,16 @@ const TeamSelect = ({ userEmail }) => {
         answerData
       );
       console.log("Respuesta enviada:", response.data);
-      alert(
-        `Respuesta a pregunta ${answer.question_number} guardada con éxito.`
-      );
-
-      navigate("/dashboard");
+      setUserResponses([...userResponses, answerData]);
+      setHasAnsweredQuestion1(true);
+      setSnackbarMessage("Respuesta enviada con éxito.");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
     } catch (error) {
       console.error("Error al enviar la respuesta:", error);
-      alert(
-        `Ya hay una respuesta guardada a la pregunta ${answerData.question_number}.`
-      );
+      setSnackbarMessage("Error al enviar la respuesta.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
@@ -147,15 +152,19 @@ const TeamSelect = ({ userEmail }) => {
       await axios.post("http://127.0.0.1:8000/answer", answerData);
       // Actualiza las respuestas del usuario después de enviar la respuesta
       setUserResponses([...userResponses, answerData]);
-      alert(`Respuesta Enviada.`);
-
-      navigate("/dashboard");
+      setSnackbarMessage("Respuesta enviada con éxito.");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
     } catch (error) {
       console.error("Error al guardar la respuesta:", error);
-      alert(
-        `Ya hay una respuesta guardada a la pregunta ${answerData.question_number}.`
-      );
+      setSnackbarMessage("Error al enviar la respuesta.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -294,6 +303,20 @@ const TeamSelect = ({ userEmail }) => {
             )}
           </Grid>
         </Grid>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            onClose={handleSnackbarClose}
+            severity={snackbarSeverity}
+            sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </Container>
     </>
   );

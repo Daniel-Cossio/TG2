@@ -6,7 +6,14 @@ import Grid from "@mui/material/Grid";
 import DOMPurify from "dompurify";
 import TextField from "@mui/material/TextField";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Button } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  Typography,
+  Container,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 
 export default function Debate() {
   const [activity, setActivity] = useState(null);
@@ -20,6 +27,9 @@ export default function Debate() {
     answer4: "",
     answer5: "",
   });
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   useEffect(() => {
     const fetchActivity = async () => {
@@ -43,9 +53,13 @@ export default function Debate() {
   const activityExample = DOMPurify.sanitize(activity.example);
   const activityEvaluation = DOMPurify.sanitize(activity.evaluation);
 
-  const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
     if (!isAuthenticated) {
-      alert("Debes iniciar sesión para enviar tus respuestas.");
+      setSnackbarMessage("Debes iniciar sesión para enviar tus respuestas.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
       return;
     }
 
@@ -53,7 +67,7 @@ export default function Debate() {
       if (answerText.trim() !== "") {
         const answerData = {
           user_email: user.email,
-          activity_id: 7,
+          activity_id: "7",
           question_number: parseInt(question.replace("answer", "")),
           answer_text: answerText,
           rating: -1,
@@ -67,23 +81,29 @@ export default function Debate() {
               `Respuesta ${answerData.question_number} enviada:`,
               response.data
             );
-            alert(
+            setSnackbarMessage(
               `Respuesta a pregunta ${answerData.question_number} guardada con éxito.`
             );
+            setSnackbarSeverity("success");
+            setSnackbarOpen(true);
           })
           .catch((error) => {
             console.error(
               `Error al enviar respuesta ${answerData.question_number}:`,
               error
             );
-            alert(
+            setSnackbarMessage(
               `Ya hay una respuesta guardada a la pregunta ${answerData.question_number}.`
             );
-          }, []);
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
+          });
       }
     });
+  };
 
-    navigate("/dashboard");
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -213,6 +233,20 @@ export default function Debate() {
           </div>
         </div>
       </Grid>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       <br />
       <br />
     </>

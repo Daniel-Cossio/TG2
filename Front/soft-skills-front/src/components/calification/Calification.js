@@ -12,6 +12,18 @@ import {
   Button,
 } from "@mui/material";
 import ResponsiveAppBar from "../responsiveappbar/ResponsiveAppBar";
+import "./Calification.css";
+
+const Notification = ({ message, severity, onClose }) => {
+  if (!message) return null;
+
+  return (
+    <div className={`notification ${severity}`}>
+      {message}
+      <button onClick={onClose}>X</button>
+    </div>
+  );
+};
 
 const Calification = () => {
   const [answers, setAnswers] = useState([]);
@@ -19,6 +31,10 @@ const Calification = () => {
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [notification, setNotification] = useState({
+    message: "",
+    severity: "",
+  });
 
   useEffect(() => {
     const fetchAnswersAndActivities = async () => {
@@ -74,6 +90,7 @@ const Calification = () => {
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     if (rating !== undefined && comment !== undefined) {
       try {
+        const currentAnswer = answers[currentQuestionIndex];
         currentAnswer.rating = rating;
         currentAnswer.comment = comment;
 
@@ -81,18 +98,24 @@ const Calification = () => {
           `http://127.0.0.1:8000/answer/${currentAnswer.id}`,
           currentAnswer
         );
-        alert(
-          `Calificación y comentario para la pregunta ${questionNumber} guardados con éxito.`
-        );
+        setNotification({
+          message: `Calificación y comentario guardados con éxito.`,
+          severity: "success",
+        });
         // Avanzar a la siguiente pregunta
         setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
       } catch (error) {
         console.error("Error al enviar la calificación y comentario:", error);
-        alert(
-          `Error al enviar la calificación y comentario para la pregunta ${questionNumber}.`
-        );
+        setNotification({
+          message: `Error al enviar la calificación y comentario para la pregunta ${questionNumber}.`,
+          severity: "error",
+        });
       }
     }
+  };
+
+  const handleNotificationClose = () => {
+    setNotification({ message: "", severity: "" });
   };
 
   const currentAnswer = answers[currentQuestionIndex];
@@ -116,6 +139,11 @@ const Calification = () => {
               rating o que tienen un rating menor a cero y calificarlas.
             </Typography>
             <Paper elevation={3} style={{ padding: "20px" }}>
+              <Notification
+                message={notification.message}
+                severity={notification.severity}
+                onClose={handleNotificationClose}
+              />
               {currentAnswer ? (
                 <List>
                   <ListItem>

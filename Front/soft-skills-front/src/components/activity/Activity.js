@@ -5,7 +5,14 @@ import axios from "axios";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import DOMPurify from "dompurify";
-import { Button } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  Typography,
+  Container,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -23,6 +30,10 @@ export default function Activity() {
     answer4: "",
     answer5: "",
   });
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -59,13 +70,14 @@ export default function Activity() {
     setAnswers({ ...answers, [question]: e.target.value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     if (!isAuthenticated) {
       alert("Debes iniciar sesión para enviar tus respuestas.");
       return;
     }
 
-    Object.entries(answers).forEach(([question, answerText]) => {
+    Object.entries(answers).forEach(async ([question, answerText]) => {
       if (answerText.trim() !== "") {
         const answerData = {
           user_email: user.email,
@@ -75,31 +87,30 @@ export default function Activity() {
           rating: -1,
           comment: "",
         };
-        axios
-          .post("http://127.0.0.1:8000/answer", answerData)
-          //.post("https://tg2-wfw8.onrender.com/answer", answerData)
-          .then((response) => {
-            console.log(
-              `Respuesta ${answerData.question_number} enviada:`,
-              response.data
-            );
-            alert(
-              `Respuesta a pregunta ${answerData.question_number} guardada con éxito.`
-            );
-          })
-          .catch((error) => {
-            console.error(
-              `Error al enviar respuesta ${answerData.question_number}:`,
-              error
-            );
-            alert(
-              `Ya hay una respuesta guardada a la pregunta ${answerData.question_number}.`
-            );
-          }, []);
+        try {
+          await axios.post("http://127.0.0.1:8000/answer", answerData);
+          setSnackbarMessage(`Respuestas guardadas con exito.`);
+          setSnackbarSeverity("success");
+          setSnackbarOpen(true);
+        } catch (error) {
+          console.error(
+            `Error al enviar respuesta ${answerData.question_number}:`,
+            error
+          );
+          setSnackbarMessage(
+            `Ya hay una respuesta guardada para esta actividad`
+          );
+          setSnackbarSeverity("error");
+          setSnackbarOpen(true);
+        }
       }
     });
 
-    navigate("/dashboard");
+    //navigate("/dashboard");
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -264,6 +275,20 @@ export default function Activity() {
           </Stack>
         </Grid>
       </Grid>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       <br />
       <br />
     </>

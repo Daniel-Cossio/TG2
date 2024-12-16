@@ -22,7 +22,7 @@ export default function MentalMap() {
       })
       .catch((error) => {
         console.error("Error al obtener los detalles de la actividad:", error);
-      });
+      }, []);
 
     axios
       .get("http://127.0.0.1:8000/decision/random/")
